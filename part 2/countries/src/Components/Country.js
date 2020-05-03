@@ -1,4 +1,8 @@
 import React from 'react'
+import Weather from './Weather'
+
+
+
 const Country = ({country,useFull}) =>
 
 {
@@ -25,7 +29,9 @@ const FullCountry = ({country}) =>{
             )}
 
         </li>
-        <img src={country.flag} alt="the flag of the country"/>
+        <img width="150" height="150" src={country.flag} alt="the flag of the country"/>
+        <h1>Weather</h1>
+        <Weather country={country}/>
         </div>
     )
 

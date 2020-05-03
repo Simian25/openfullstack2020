@@ -10,7 +10,6 @@ function App() {
     .get('https://restcountries.eu/rest/v2/all')
     .then((promise)=>{
         setCountries(promise.data)
-        console.log(countries);
     })
 
   }
