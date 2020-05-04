@@ -3,7 +3,7 @@ import Persons from './Components/Persons'
 import PersonForm from './Components/PersonForm'
 import personService from './Services/persons'
 import Filter from './Components/Filter'
-
+import {Notification,Error} from './Components/Notification'
 
 
 const App = () => {
@@ -14,6 +14,10 @@ const App = () => {
   const [newNumber,setNewNumber] = useState('');
 
   const [filteredName,setFilteredName] = useState('');
+
+  const [notificationText,setNotificationText] = useState(null);
+  const [errorText,setErrorText] = useState(null);
+
 
   useEffect(() => {
     personService
@@ -38,14 +42,22 @@ const App = () => {
     if(typeof personToChange !== 'undefined'){
       if(window.confirm(`${newName} is already added to phonebook, replace number with new one?`)){
         personService.update(personToChange.id,personObject)
-        .then(returnedPerson => {setPersons(persons.map((person)=> person.id===returnedPerson.id ? returnedPerson:person ))})
+        .then(returnedPerson => {setPersons(persons.map((person)=> person.id===returnedPerson.id ? returnedPerson:person ))
+          setNotificationText(`Changed ${newName} address in the phonebook.`);
+          setTimeout(() => {setNotificationText(null)},5000);
+        })
       };
 
     }else{
       personService.create(personObject)
-      .then(returnedPerson => {setPersons(persons.concat(returnedPerson)); })
+      .then(returnedPerson => {setPersons(persons.concat(returnedPerson)); 
+        setNotificationText(`Added ${newName} to the phonebook.`);
+        setTimeout(() => {setNotificationText(null)},5000);
+      
+      })
     }
     setNewName("");
+    setNewNumber("");
   }
 
 
@@ -57,6 +69,13 @@ const App = () => {
       personService
     .deleteByID(personToDelete.id)
     .then(setPersons(persons.filter((person) => person.id!==personToDelete.id)))
+    .catch( () => {
+      setErrorText(`${personToDelete.name} has already been deleted please reload the page`);
+        setTimeout(() => {setErrorText(null)},5000);
+      
+    }
+      
+    )
     }
   }
 
@@ -65,6 +84,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationText}/>
+      <Error message={errorText}/>
       <Filter onChange={filterNames} input={filteredName}/>
       <h2>Add a new</h2>
       <PersonForm onSubmit={addPerson} onNameChange={updateName} onNumberChange={updateNumber} newName={newName} newNumber={newNumber}/>
