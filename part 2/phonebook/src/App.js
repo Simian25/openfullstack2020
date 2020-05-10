@@ -54,6 +54,9 @@ const App = () => {
         setNotificationText(`Added ${newName} to the phonebook.`);
         setTimeout(() => {setNotificationText(null)},5000);
       
+      }).catch(err => {
+        setErrorText(`${err}`);
+        setTimeout(() => {setErrorText(null)},5000);
       })
     }
     setNewName("");
