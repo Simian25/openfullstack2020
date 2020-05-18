@@ -14,6 +14,7 @@ const blogRouter = require('./controllers/blog')
 mongoose.connect(config.url, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(()=>logger.info('connected to database'))
 .catch(err=>logger.error('error: ',err.message))
+mongoose.set('useFindAndModify', false);
 app.use(cors())
 
 app.use(express.json())
