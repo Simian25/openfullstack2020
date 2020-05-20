@@ -2,6 +2,7 @@ const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const blogHelper = require('../utils/blog_helper');
+const jwt =require('jsonwebtoken')
 
 
 blogRouter.get('/', async (request, response, next) => {
@@ -14,24 +15,34 @@ blogRouter.get('/', async (request, response, next) => {
 });
 blogRouter.delete('/:id',async (request,response,next)=>{
   try{
-   await Blog.findByIdAndRemove(request.params.id)
+   const blog = await Blog.findById(request.params.id)
+   const token = request.token
+   const decodedToken = jwt.verify(token,process.env.SECRET)
+   if (!token || !decodedToken.id) {
+     return response.status(401).json({
+       error: 'token missing or invalid'
+     })
+   }
+   const user = await User.findById(decodedToken.id)
+   if(blog.user.toString()===user.id.toString()){
+      blog.remove()
+   }
    response.status(204).end();
   }catch(err){
     next(err)
   }
 
 })
+
 blogRouter.put('/:id',async (request,response,next)=>{
   try{
-    const {
-      title, author, url, likes,
-    } = request.body;
+    const body = request.body
 
-    if (!title && !author && !url && !likes) {
+    if (!body.title && !body.author && !body.url && !body.likes) {
       res.status(400).end();
       return;
     }
-    if(!title || (!author &&!url)){
+    if(!body.title || (!body.author &&!body.url)){
       const blogs = await blogHelper.blogsInDb();
       const blog = blogs.find(originalBlog => originalBlog.id === request.params.id);
       blog.likes= likes;
@@ -50,17 +61,17 @@ blogRouter.put('/:id',async (request,response,next)=>{
 blogRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
-    let user;
+    const token = request.token
+    const decodedToken = jwt.verify(token,process.env.SECRET)
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({
+        error: 'token missing or invalid'
+      })
+    }
+    const user = await User.findById(decodedToken.id)
     if (!body.title && !body.url) {
       response.status(400).end();
     } else {
-      if(!body.user){
-         const users = await User.find({});
-         user = users[0];
-      }else{
-        user = User.findById(body.userId);
-      }
-      console.log(user);
       const blog = new Blog({
         ...body,
         user:user._id
