@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import blogService from './services/blogService'
 import loginService from './services/login' 
 import {LoginScreen,LogoutScreen} from './components/login'
-import BlogFinder from './components/BlogFinder'
+import BlogList from './components/BlogList'
 import BlogCreator from './components/BlogCreator'
 import {Error,Notification} from './components/Notification'
 const App = () => {
@@ -10,7 +10,6 @@ const App = () => {
   const [username,setUsername] = useState('')
   const [user,setUser] = useState(null)
   const [password,setPassword] = useState('')
-  const [filteredBlogs,setFilteredBlogs] = useState([]);
   
   const [error,setError]=useState(null)
   const [message,setMessage] = useState(null)
@@ -19,33 +18,7 @@ const App = () => {
   const [author,setAuthor] = useState('')
   const [url,setUrl] = useState('')
 
-
-
-  const handleLogin =async (event)=>{
-    event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username, password,
-      })
-      window.localStorage.setItem( 'loggedInUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-    setFilteredBlogs(blogs.filter((blog)=>blog.user!==undefined)
-      .filter((blog)=>blog.user.username===user.username))
-    } catch (err) {
-      setError('Wrong username or password')
-      setTimeout(() => {
-        setError(null)
-      }, 5000)
-    }
-  }
-  const handleLogout = (event)=>{
-    event.preventDefault()
-    window.localStorage.removeItem('loggedInUser')
-    setUser(null)
-  }
+  const  [loginVisible,setLoginVisible]= useState(false)
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
@@ -58,25 +31,33 @@ const App = () => {
       const user = JSON.parse(loggedInUser)
       blogService.setToken(user.token)
       setUser(user)
-      setFilteredBlogs(blogs.filter((blog)=>blog.user!==undefined)
-      .filter((blog)=>blog.user.username===user.username))
     }
-  },[blogs])
-  const loginForm = ()=>{
-    return(<LoginScreen onSubmit={handleLogin} username={username} password={password} setUsername={({target})=>setUsername(target.value)} setPassword={({target})=>setPassword(target.value)} />
-    )
+  },[])
+
+  const handleLogin =async (event)=>{
+    event.preventDefault()
+    try {
+      const user = await loginService.login({
+        username, password,
+      })
+      window.localStorage.setItem( 'loggedInUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (err) {
+      setError('Wrong username or password')
+      setTimeout(() => {
+        setError(null)
+      }, 5000)
+    }
   }
-  const userLoggedIn = ()=>{
-    return(
-      <div>
-      <LogoutScreen name={user.name} onClick ={handleLogout}/>
-      <h2>blogs</h2>
-      <BlogCreator onSubmit={addNewBlog} title={title} author={author} url={url} handleTitleChange={handleTitleChange} handleAuthorChange={handleAuthorChange} handleUrlChange={handleUrlChange} />
-      <BlogFinder blogs={filteredBlogs}/>
-      </div>
-    )
+  const handleLogout = (event)=>{
+    event.preventDefault()
+    window.localStorage.removeItem('loggedInUser')
+    setUser(null)
   }
-  
+
   const handleTitleChange = (event)=>{
     setTitle(event.target.value)
   }
@@ -99,13 +80,46 @@ const App = () => {
     setTimeout(() => {
       setMessage(null);
     }, 2000);
-    setFilteredBlogs(filteredBlogs.concat(returnedBlog))
+    setBlogs(blogs.concat(returnedBlog))
     setTitle('')
     setAuthor('')
     setUrl('')
     
   }
 
+
+
+  const loginForm = ()=>{
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: loginVisible ? '' : 'none' }
+    return(
+    <>
+    <div style={hideWhenVisible}>
+    <button onClick={() => setLoginVisible(true)}>log in</button>
+    </div>
+    <div style={showWhenVisible}>
+    <LoginScreen onSubmit={handleLogin} username={username} password={password} setUsername={({target})=>setUsername(target.value)} setPassword={({target})=>setPassword(target.value)} />
+    <button onClick={() => setLoginVisible(false)}>cancel</button>
+    </div>
+    </>
+    )
+  }
+  const userLoggedIn = ()=>{
+    
+    return(
+      <div>
+        
+      <LogoutScreen name={user.name} onClick ={handleLogout}/>
+      <h2>blogs</h2>
+      <BlogCreator onSubmit={addNewBlog} title={title} author={author} url={url} handleTitleChange={handleTitleChange} handleAuthorChange={handleAuthorChange} handleUrlChange={handleUrlChange} />
+      <BlogList blogs={blogs}/>
+      </div>
+    )
+  }
+  
+  
+
+  
   return (
     <div>
       <Error message={error}/>
