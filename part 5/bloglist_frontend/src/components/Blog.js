@@ -1,10 +1,10 @@
-import React,{useState} from 'react'
+import React,{ useState } from 'react'
 
 const Blog = ({ blog,updateHandler,deleteHandler }) => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
-  const showWhenVisible = { display: visible ? '' : 'none' };
-  const showWhenNotVisible = { display: visible ? 'none' : '' };
+  const showWhenVisible = { display: visible ? '' : 'none' }
+  const showWhenNotVisible = { display: visible ? 'none' : '' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -12,7 +12,7 @@ const Blog = ({ blog,updateHandler,deleteHandler }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  };
+  }
 
   return (
     <div style={blogStyle}>
@@ -25,15 +25,15 @@ const Blog = ({ blog,updateHandler,deleteHandler }) => {
           <a href={blog.url}>{blog.url}</a>
           <br />
           {blog.likes} likes
-          <button onClick={()=>updateHandler(blog)}>like</button>
+          <button onClick={() => updateHandler(blog)}>like</button>
           <br />
           {blog.user.name}
           <br />
-          <button onClick={()=>deleteHandler(blog)}>delete</button>
+          <button onClick={() => deleteHandler(blog)}>delete</button>
         </div>
       </div>
     </div>
-  );
-  }
+  )
+}
 
 export default Blog
