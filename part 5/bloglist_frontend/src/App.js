@@ -5,6 +5,8 @@ import {LoginScreen,LogoutScreen} from './components/login'
 import BlogList from './components/BlogList'
 import BlogCreator from './components/BlogCreator'
 import {Error,Notification} from './components/Notification'
+import ToggleAble from './components/ToggleAble'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username,setUsername] = useState('')
@@ -14,14 +16,13 @@ const App = () => {
   const [error,setError]=useState(null)
   const [message,setMessage] = useState(null)
 
-  const [title,setTitle] = useState('')
-  const [author,setAuthor] = useState('')
-  const [url,setUrl] = useState('')
-
-  const  [loginVisible,setLoginVisible]= useState(false)
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
+  const blogCreateRef = React.createRef()
+  
+  useEffect(() => { //easier to use then than async
+    blogService.getAll().then(blogs =>{
+      blogs.sort((a,b)=>b.likes-a.likes)
       setBlogs( blogs )
+    }
     )  
   }, [])
   
@@ -58,61 +59,62 @@ const App = () => {
     setUser(null)
   }
 
-  const handleTitleChange = (event)=>{
-    setTitle(event.target.value)
-  }
-  const handleAuthorChange = (event)=>{
-    setAuthor(event.target.value)
-  }
-  const handleUrlChange = (event)=>{
-    setUrl(event.target.value)
-  }
-
-  const addNewBlog = async (event)=>{
-    event.preventDefault()
-    const blogObject = {
-      title:title,
-      author:author,
-      url:url, 
+  const createBlog = async (bObj) =>{
+    blogCreateRef.current.toggleVisibility()
+    const returnedBlog = await blogService.create(bObj)
+    returnedBlog.user = {
+      name: user.name
     }
-    const returnedBlog = await blogService.create(blogObject)
-    setMessage(`A new blog ${title} by ${author} has been added`)
-    setTimeout(() => {
-      setMessage(null);
-    }, 2000);
-    setBlogs(blogs.concat(returnedBlog))
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+       setMessage(`A new blog ${bObj.title} by ${bObj.author} has been added`)
+       setTimeout(() => {
+         setMessage(null);
+       }, 2000);
+       setBlogs(blogs.concat(returnedBlog))
+  }
+  const updateBlog = (blog)=>{ //didnt use async as exercise
+    blogService.like(blog).then(
+      (updateBlog)=>{
+        updateBlog.user = {
+          name: user.name
+        }
+        const updatedBlogs = blogs
+        .filter(b => b.id !== blog.id)
+        .concat(updateBlog)
+        .sort((a, b) => b.likes - a.likes);
+  
+      setBlogs(updatedBlogs);
+    })
     
+  }
+  const deleteBlog = async (blog)=>{
+    if(window.confirm("delete this blog?")){
+      console.log(blog," deleted")
+     await blogService.deleteBlog(blog)
+     const updatedBlogs = blogs
+        .filter(b => b.id !== blog.id)
+      setBlogs(updatedBlogs)
+    }
+
   }
 
 
 
   const loginForm = ()=>{
-    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
-    const showWhenVisible = { display: loginVisible ? '' : 'none' }
+    
     return(
-    <>
-    <div style={hideWhenVisible}>
-    <button onClick={() => setLoginVisible(true)}>log in</button>
-    </div>
-    <div style={showWhenVisible}>
     <LoginScreen onSubmit={handleLogin} username={username} password={password} setUsername={({target})=>setUsername(target.value)} setPassword={({target})=>setPassword(target.value)} />
-    <button onClick={() => setLoginVisible(false)}>cancel</button>
-    </div>
-    </>
     )
   }
   const userLoggedIn = ()=>{
-    
     return(
       <div>
         
       <LogoutScreen name={user.name} onClick ={handleLogout}/>
       <h2>blogs</h2>
-      <BlogCreator onSubmit={addNewBlog} title={title} author={author} url={url} handleTitleChange={handleTitleChange} handleAuthorChange={handleAuthorChange} handleUrlChange={handleUrlChange} />
-      <BlogList blogs={blogs}/>
+      <ToggleAble buttonLabel="new blog" ref={blogCreateRef}>
+      <BlogCreator createBlog={createBlog} />
+      </ToggleAble>
+      <BlogList blogs={blogs} updateHandler={updateBlog} deleteHandler={deleteBlog}/>
       </div>
     )
   }

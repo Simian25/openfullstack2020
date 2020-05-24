@@ -34,30 +34,24 @@ blogRouter.delete('/:id',async (request,response,next)=>{
 
 })
 
-blogRouter.put('/:id',async (request,response,next)=>{
-  try{
-    const body = request.body
 
-    if (!body.title && !body.author && !body.url && !body.likes) {
-      res.status(400).end();
-      return;
-    }
-    if(!body.title || (!body.author &&!body.url)){
-      const blogs = await blogHelper.blogsInDb();
-      const blog = blogs.find(originalBlog => originalBlog.id === request.params.id);
-      blog.likes= likes;
-      const updatedBlog = await Blog.findByIdAndUpdate(request.params.id,blog,{ new: true })
-      response.json(updatedBlog.toJSON());
-    }else{
-      const blog = new Blog(request.body);
-      const updatedBlog = await Blog.findByIdAndUpdate(request.params.id,blog,{ new: true })
-      response.json(updatedBlog.toJSON());
-    }
-  
-  }catch(err){
-    next(err)
+blogRouter.put('/:id', async (request, res, next) => {
+  try {
+    const body = request.body
+    const dataToUpdate = {
+      likes: body.likes
+    };
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      dataToUpdate,
+      { new: true },
+    );
+    res.json(updatedBlog.toJSON());
+  } catch (exception) {
+    next(exception);
   }
-})  
+  });
 blogRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body

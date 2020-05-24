@@ -4,6 +4,7 @@ const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
   logger.info('Body:  ', request.body)
+  logger.info('Token: ', request.token)
   logger.info('---')
   next()
 }
@@ -26,7 +27,7 @@ const errorHandler = (error, request, response, next) => {
     next(error)
   }
 const tokenExtractor = (req,res,next) =>{
-    const auth = req.get('authorization')
+    const auth = req.get('Authorization')
     if(auth && auth.toLowerCase().startsWith('bearer ')){
       req.token =  auth.substring(7)
     }
