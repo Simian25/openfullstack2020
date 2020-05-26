@@ -35,9 +35,9 @@ const BlogCreator =({ createBlog }) => {
         <p>title:<input type="text" id='title' value={title} onChange={handleTitleChange} name="title" /></p>
         <p>author:<input id='author' type="text"value={author} onChange={handleAuthorChange} name="author" /></p>
         <p>url:<input type="text" id='url' value={url} onChange={handleUrlChange} name="url" /></p>
-        <button type='submit'>Create</button>
+        <button id='submitButton' type='submit'>Create</button>
 
-      </form>)
+      </form>
     </div>
   )
 }

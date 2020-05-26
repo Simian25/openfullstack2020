@@ -5,6 +5,7 @@ const User = require('../models/user')
 userRouter.post('/',async(req,res)=>{
    const body =req.body
    const saltRounds = 10
+   try {
    if(body.username && body.password){
    if(body.username.length<4){
     res.status(401).json({error:"username must be longer than 3 characters"})
@@ -28,6 +29,8 @@ userRouter.post('/',async(req,res)=>{
   }else{
     res.status(401).json({error:"please enter username and password"})
 
+  }} catch (error) {
+   console.log(error)  
   }
 })
 userRouter.get('/', async(req,res)=>{

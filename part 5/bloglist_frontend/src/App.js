@@ -90,6 +90,10 @@ const App = () => {
       const updatedBlogs = blogs
         .filter(b => b.id !== blog.id)
       setBlogs(updatedBlogs)
+      setMessage(`deleted: The blog ${blog.title} by ${blog.author} has been deleted`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
     }
 
   }
@@ -104,12 +108,15 @@ const App = () => {
   const userLoggedIn = () => {
     return(
       <div>
+        <h1>Blog app</h1>
         <LogoutScreen name={user.name} onClick ={handleLogout}/>
         <h2>blogs</h2>
         <ToggleAble buttonLabel="new blog" ref={blogCreateRef}>
           <BlogCreator createBlog={createBlog} />
         </ToggleAble>
-        <BlogList blogs={blogs} updateHandler={updateBlog} deleteHandler={deleteBlog}/>
+        <div id='blogs'>
+          <BlogList blogs={blogs} updateHandler={updateBlog} deleteHandler={deleteBlog}/>
+        </div>
       </div>
     )
   }
