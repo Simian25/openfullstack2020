@@ -1,15 +1,18 @@
 
-export const setMessage = (message) => {
-  return{
+export const setNotification = (message, time) => async (dispatch) => {
+  dispatch({
     type: 'NOTIFICATION',
     data: { message }
-  }
+  })
+  setTimeout(() => {
+    dispatch({
+      type: 'RESET'
+    })
+  }, time * 1000)
+
 }
-export const resetMessage = () => {
-  return{
-    type:'RESET'
-  }
-}
+
+
 const intitialState = null
 const reducer = (state = intitialState, action) => {
   switch(action.type){
