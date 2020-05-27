@@ -14,7 +14,7 @@ export const addNewAnecdote = (data) => {
   }
 }
 
-export const initializeAnecdotes = (anecdotes) =>{
+export const initializeAnecdotes = (anecdotes) => {
   return{
     type:'INITIALIZE',
     data : anecdotes
