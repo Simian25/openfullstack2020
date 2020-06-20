@@ -4,8 +4,14 @@ import loginService from './services/login'
 import { LoginScreen,LogoutScreen } from './components/login'
 import BlogList from './components/BlogList'
 import BlogCreator from './components/BlogCreator'
-import { Error,Notification } from './components/Notification'
+import Notification from './components/Notification'
+import Error from './components/ErrorNotification'
 import ToggleAble from './components/ToggleAble'
+
+import { useDispatch } from 'react-redux'
+
+import { setNotification } from './reducers/notificationReducer'
+import { getBlogs } from './reducers/blogReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -13,17 +19,13 @@ const App = () => {
   const [user,setUser] = useState(null)
   const [password,setPassword] = useState('')
 
-  const [error,setError]=useState(null)
-  const [message,setMessage] = useState(null)
 
   const blogCreateRef = React.createRef()
 
+  const dispatch = useDispatch()
+
   useEffect(() => { //easier to use then than async
-    blogService.getAll().then(blogs => {
-      blogs.sort((a,b) => b.likes-a.likes)
-      setBlogs( blogs )
-    }
-    )
+    dispatch(getBlogs())
   }, [])
 
   useEffect(() => {
@@ -47,9 +49,9 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (err) {
-      setError('Wrong username or password')
+      dispatch(setNotification('Wrong username or password','error'))
       setTimeout(() => {
-        setError(null)
+        dispatch(setNotification(null))
       }, 5000)
     }
   }
@@ -65,9 +67,9 @@ const App = () => {
     returnedBlog.user = {
       name: user.name
     }
-    setMessage(`A new blog ${bObj.title} by ${bObj.author} has been added`)
+    dispatch(setNotification(`A new blog ${bObj.title} by ${bObj.author} has been added`,'message'))
     setTimeout(() => {
-      setMessage(null)
+      dispatch(setNotification(null))
     }, 2000)
     setBlogs(blogs.concat(returnedBlog))
   }
@@ -90,9 +92,9 @@ const App = () => {
       const updatedBlogs = blogs
         .filter(b => b.id !== blog.id)
       setBlogs(updatedBlogs)
-      setMessage(`deleted: The blog ${blog.title} by ${blog.author} has been deleted`)
+      dispatch(setNotification(`deleted: The blog ${blog.title} by ${blog.author} has been deleted`,'message'))
       setTimeout(() => {
-        setMessage(null)
+        dispatch(setNotification(null))
       }, 2000)
     }
 
@@ -115,15 +117,15 @@ const App = () => {
           <BlogCreator createBlog={createBlog} />
         </ToggleAble>
         <div id='blogs'>
-          <BlogList blogs={blogs} updateHandler={updateBlog} deleteHandler={deleteBlog}/>
+          <BlogList/>
         </div>
       </div>
     )
   }
   return (
     <div>
-      <Error message={error}/>
-      <Notification message={message}/>
+      <Error/>
+      <Notification/>
       {user === null ? loginForm():userLoggedIn()}
     </div>
   )

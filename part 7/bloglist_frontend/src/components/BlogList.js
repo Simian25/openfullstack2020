@@ -1,5 +1,6 @@
 import React from 'react'
 import Blog from './Blog'
+import {connect} from 'react-redux'
 
 
 const BlogList = ({ blogs,updateHandler,deleteHandler }) => {
@@ -8,6 +9,10 @@ const BlogList = ({ blogs,updateHandler,deleteHandler }) => {
       <Blog key={blog.id} blog={blog} updateHandler={updateHandler} deleteHandler={deleteHandler}/>
     ))
 }
+const mapStateToProps = (state) => {
+  return{
+    blogs:state.blogs
+  }
+}
 
-
-export default BlogList
+export default connect(mapStateToProps)(BlogList)
