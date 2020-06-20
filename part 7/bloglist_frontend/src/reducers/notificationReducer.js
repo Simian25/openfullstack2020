@@ -1,7 +1,6 @@
 
 export const setNotification = (text, type) => {
   if(text&&type){
-    console.log(text)
     return async dispatch => {
       dispatch({ type: 'SHOW_NOTIFICATION', data: {
         text,

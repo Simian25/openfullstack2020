@@ -1,16 +1,49 @@
+import blogService from '../services/blogService'
+import loginService from '../services/login'
 
-export const setFilter = (filter) => {
+export const checkUser = () => {
+  const loggedInUser = window.localStorage.getItem('loggedInUser')
+  if(loggedInUser){
+    const user = JSON.parse(loggedInUser)
+    blogService.setToken(user.token)
+    return{
+      type: 'INIT_USER',
+      data: { user }
+    }
+  }
   return{
-    type: 'FILTER',
-    data: { filter }
+    type: 'INIT_USER',
+    data: { user:null }
+  }
+}
+export const handleLogin = (userCredentials) => {
+  return async dispatch => {
+    const user = await loginService.login(userCredentials)
+    window.localStorage.setItem( 'loggedInUser', JSON.stringify(user))
+    blogService.setToken(user.token)
+    dispatch({
+      type:'INIT_USER',
+      data:{ user }
+    })
   }
 }
 
-const reducer = (state = ['',''], action) => {
-  if(action.type==='FILTER'){
-    state=action.data.filter
+export const handleLogout = () =>{
+  window.localStorage.removeItem('loggedInUser')
+  return{
+    type:'LOGOUT'
   }
-  return state
+}
+const reducer = (state = null, action) => {
+  switch(action.type){
+  case 'INIT_USER':
+    state=action.data.user
+    return state
+  case 'LOGOUT':
+    return null
+  default:
+    return state
+  }
 }
 
 export default reducer

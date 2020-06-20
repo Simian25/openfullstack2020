@@ -28,7 +28,6 @@ const like = async (obj) => {
     likes:obj.likes
   }
   const url = `${baseUrl}/${obj.id}`
-  console.log(url)
   const response = await axios.put(url,newObj,config)
   return response.data
 }

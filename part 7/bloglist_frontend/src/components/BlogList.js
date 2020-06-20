@@ -1,6 +1,6 @@
 import React from 'react'
 import Blog from './Blog'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 
 const BlogList = ({ blogs,updateHandler,deleteHandler }) => {
