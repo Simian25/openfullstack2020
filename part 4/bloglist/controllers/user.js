@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
 const userRouter = require('express').Router()
 const User = require('../models/user')
-//TODO: 4.17-4.22
 userRouter.post('/',async(req,res)=>{
    const body =req.body
    const saltRounds = 10

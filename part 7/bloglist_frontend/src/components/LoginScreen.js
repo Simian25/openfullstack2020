@@ -1,26 +1,29 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { handleLogin } from '../reducers/userReducer'
+import { useHistory } from 'react-router-dom'
+import { handleLogin } from '../reducers/loginReducer'
 
 
-const LoginScreen = ({ username,password,setUsername,setPassword,onSubmit }) => {
+const LoginScreen = () => {
+  const history = useHistory()
   const dispatch = useDispatch()
   const handleSubmit = (event) => {
     event.preventDefault()
     const username = event.target.username.value
     const password = event.target.password.value
     dispatch(handleLogin({ username,password }))
+    history.push('/')
   }
   return(
     <form onSubmit={handleSubmit}>
       <div>
         <h2>login</h2>
     username
-        <input type="text" id='username' onChange={setUsername} value={username} name="username" />
+        <input type="text" id='username'name="username" />
       </div>
       <div>
       password
-        <input type="password" id='password' value={password} name="Password" onChange={setPassword} />
+        <input type="password" id='password' name="Password" />
       </div>
       <button id='loginButton' type="submit">login</button>
     </form>

@@ -3,10 +3,10 @@ import Blog from './Blog'
 import { connect } from 'react-redux'
 
 
-const BlogList = ({ blogs,updateHandler,deleteHandler }) => {
+const BlogList = ({ blogs }) => {
   return(
     blogs.map(blog =>
-      <Blog key={blog.id} blog={blog} updateHandler={updateHandler} deleteHandler={deleteHandler}/>
+      <Blog key={blog.id} blog={blog}/>
     ))
 }
 const mapStateToProps = (state) => {
