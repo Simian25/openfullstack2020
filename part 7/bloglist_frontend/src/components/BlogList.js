@@ -1,12 +1,22 @@
 import React from 'react'
-import Blog from './Blog'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 
 const BlogList = ({ blogs }) => {
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
   return(
     blogs.map(blog =>
-      <Blog key={blog.id} blog={blog}/>
+      <div style={blogStyle} key={blog.id}>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+        <br/>
+      </div>
     ))
 }
 const mapStateToProps = (state) => {

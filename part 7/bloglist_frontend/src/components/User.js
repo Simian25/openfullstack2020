@@ -3,7 +3,7 @@ import React from 'react'
 
 const User = ({ user }) => {
   if(!user){
-    return <p>Error</p>
+    return null
   }
   return (
     <div>

@@ -12,6 +12,7 @@ import LoginScreen from './components/LoginScreen'
 import LogoutScreen from './components/LogoutScreen'
 import BlogList from './components/BlogList'
 import BlogCreator from './components/BlogCreator'
+import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Error from './components/ErrorNotification'
 import ToggleAble from './components/ToggleAble'
@@ -57,8 +58,11 @@ const App = () => {
 
   const user = useSelector(state => state.user)
   const users = useSelector(state => state.users)
+  const blogs = useSelector(state => state.blogs)
   const match = useRouteMatch('/users/:id')
+  const blogMatch = useRouteMatch('/blogs/:id')
   const userText = match ? users.find(user => user._id === match.params.id)   : null
+  const blog = blogMatch ? blogs.find(blog => blog.id===blogMatch.params.id) : null
   const padding = {
     padding: 5
   }
@@ -74,14 +78,22 @@ const App = () => {
         <h1>Blog app</h1>
         <LogoutScreen/></div>:null}
       <Switch>
-        <Route path="/login">
-          <LoginScreen/>
+        <Route path="/blogs/:id">
+          <h1>Blog</h1>
+          <Blog blog={blog}/>
+        </Route>
+        <Route path='/blogs'>
+          <h1>Bloglist</h1>
+          <BlogList/>
         </Route>
         <Route path='/users/:id'>
           <User user={userText}/>
         </Route>
         <Route path="/users">
           {user ? (users?<UserList/>:<p>No users yet</p>) : <Redirect to="/login" />}
+        </Route>
+        <Route path="/login">
+          <LoginScreen/>
         </Route>
         <Route path="/">
           {user? <Home />: <Redirect to = '/login'/> }
