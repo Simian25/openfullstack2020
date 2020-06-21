@@ -84,12 +84,69 @@ let books = [
 ]
 
 const typeDefs = gql`
+  type Book {
+    title: String!
+    published: Int!
+    author: String!
+    genres: [String!]!
+  }
+  type Author {
+    name: String!
+    born: Int
+    bookCount: Int!
+    id:String!
+  }
   type Query {
+    allBooks(author: String,genre: String): [Book!]!
+    allAuthors: [Author!]!
+    bookCount: Int!
+    authorCount: Int!
+  }
+  type Mutation{
+    addBook(Book!): Book
+    addAuthor(Author!):Author
   }
 `
+const { v1: uuid } = require('uuid')
 
 const resolvers = {
   Query: {
+    allBooks: (root,args)=>{
+      if(!args.author&&!args.genre){
+        return books
+      }
+      if(args.author){
+        const authorArray=books.filter(book=>book.author===args.author)
+        if(!args.genre){
+          return authorArray
+        }
+        return authorArray.filter(book=>book.genres.includes(args.genre))
+      }
+      if(args.genre){
+        return books.filter(book=>book.genres.includes(args.genre))
+      }
+      
+    },
+    allAuthors:()=>authors,
+    bookCount:  ()=>books.length,
+    authorCount: ()=>authors.length
+  },
+  Author: {bookCount: (root)=>{return(books.filter(book=>book.author===root.name).length)}},
+  Mutation:{
+    addBook: (root,args) =>{
+      const book = {...args,id:uuid()}
+      books=books.concat(book)
+      if(books.filter(book=>book.author===root.name).length===0){
+        const author = {name: book.author,id:uuid()}
+        addAuthor(author)
+      }
+      return book
+    },
+    addAuthor: (root,args) =>{
+      const author = {...args,id:uuid()}
+      authors=authors.concat(book)
+      return atuhor
+    }
   }
 }
 
