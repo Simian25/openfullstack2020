@@ -2,13 +2,17 @@ const { ApolloServer,UserInputError, gql } = require('apollo-server')
 const mongoose = require('mongoose')
 const Author = require('./models/author')
 const Book  = require('./models/book')
+const User = require('./models/user')
 const jwt = require('jsonwebtoken')
 
-const JWT_SECRET = process.env.KEY
 
 require('dotenv').config()
 
 let url = process.env.MONGO_URL
+const JWT_SECRET = process.env.KEY
+console.log(JWT_SECRET)
+
+
 
 mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true);
@@ -114,7 +118,7 @@ const resolvers = {
       return author
     },
     createUser: (root, args) => {
-      const user = new User({ username: args.username })
+      const user = new User({ username: args.username,favoriteGenre:args.favoriteGenre })
   
       return user.save()
         .catch(error => {
@@ -126,7 +130,7 @@ const resolvers = {
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username })
   
-      if ( !user || args.password !== 'secred' ) {
+      if ( !user || args.password !== process.env.PASSWORD ) {
         throw new UserInputError("wrong credentials")
       }
   
@@ -145,7 +149,7 @@ const server = new ApolloServer({
   context: async ({ req }) => {    const auth = req ? req.headers.authorization : null    
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
           const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
-          const currentUser = await User.findById(decodedToken.id).populate('friends')      
+          const currentUser = await User.findById(decodedToken.id)   
   return { currentUser }    }  }
 })
 
