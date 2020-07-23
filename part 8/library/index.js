@@ -82,7 +82,7 @@ const resolvers = {
   },
   Author: {bookCount: (root)=>{return(Book.countDocuments({author:root}))}},
  Mutation:{
-    addBook: async (root,args) =>{
+    addBook: async (root,args,context) =>{
       const currentUser = context.currentUser
 
     if (!currentUser) {
@@ -107,7 +107,7 @@ const resolvers = {
         throw new UserInputError(error.message,{invalidArgs:args})
       }
     },
-    editAuthor: async(root,args)=>{
+    editAuthor: async(root,args,context)=>{
       const currentUser = context.currentUser
 
     if (!currentUser) {
