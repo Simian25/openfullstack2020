@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import { Container, Header, Icon } from "semantic-ui-react";
 import { useParams } from "react-router-dom";
-import { useStateValue } from "../state";
+import { useStateValue, updatePatient } from "../state";
 import {apiBaseUrl} from '../constants';
 import { Patient } from "../types";
 interface Paramaters{
@@ -16,7 +16,7 @@ const PatientPage: React.FC = () =>{
     const params: Paramaters = useParams();
     const getPatient = async (id: string) =>{
         const {data: patient} = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`);
-        dispatch({type:"GET_PATIENT",payload:patient});
+        dispatch(updatePatient(patient));
     };
     
     if(!params.id){
