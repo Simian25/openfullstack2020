@@ -18,6 +18,18 @@ router.post('/',(req,res)=>{
     }
     
 })
-
+router.get('/:id',(req,res)=>{
+    console.log(`looking up persons with id: ${req.params.id}`)
+    try {
+        const patient = patientService.find(req.params.id)
+        if(patient){
+            res.json(patient)
+        }else{
+            res.sendStatus(400)
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+})
 
   export default router

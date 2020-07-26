@@ -3,13 +3,17 @@ export type Diagnose = {
     name:string,
     latin?:string
 }
-export type Patient = {
-    id:string,
-    name:string,
-    dateOfBirth:string,
-    ssn:string,
-    gender: string,
-    occupation:string
+export interface Entry {
+}
+
+export interface Patient {
+  id: string;
+  name: string;
+  ssn: string;
+  occupation: string;
+  gender: Gender;
+  dateOfBirth: string;
+  entries: Entry[]
 }
 export type newPatient = Omit<Patient, 'id'>;
 export enum Gender {
