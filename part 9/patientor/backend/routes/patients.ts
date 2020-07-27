@@ -10,7 +10,7 @@ router.post('/',(req,res)=>{
     console.log('adding user');
     const {name,dateOfBirth,ssn,gender,occupation} = req.body;
     try {
-        const newPerson = patientService.addEntry({name,dateOfBirth,ssn,gender,occupation})
+        const newPerson = patientService.addPatient({name,dateOfBirth,ssn,gender,occupation})
         console.log(newPerson)
         res.json(newPerson)
     } catch (error) {

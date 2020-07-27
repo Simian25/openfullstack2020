@@ -1,10 +1,10 @@
-import patientData from '../data/patients.json'
+import patientData from '../data/patients'
 import {Patient} from '../types'
 import {Gender} from '../types'
 
 const patients:Array<Patient> = patientData as Array<Patient>
 
-const getEntries = ():Array<Patient> => {
+const getPatients = ():Array<Patient> => {
   return patients;
 };
 const getNonSensitive = ():Omit<Patient,'ssn'|'entries'>[] =>{
@@ -16,10 +16,10 @@ const getNonSensitive = ():Omit<Patient,'ssn'|'entries'>[] =>{
     occupation
   }));
 };
-const addEntry = (patient:any):Patient =>{
+const addPatient = (patient:any):Patient =>{
     if(typeof patient.name==='string'){
       if(Object.values(Gender).includes(patient.gender)){
-        const newPerson = {id:String(Math.floor(Math.random()*1000000)),
+        const newPerson:Patient = {id:String(Math.floor(Math.random()*1000000)),
           ...patient
        }
        console.log(newPerson)
@@ -34,8 +34,8 @@ const find = (searchId:string):Omit<Patient,'ssn'> | undefined =>{
   return patients.find((patient=>patient.id===searchId))
 }
 export default {
-  getEntries,
+  getPatients,
   getNonSensitive,
-  addEntry,
+  addPatient,
   find
 };

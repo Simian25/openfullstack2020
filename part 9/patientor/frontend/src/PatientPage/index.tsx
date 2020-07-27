@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useStateValue, updatePatient } from "../state";
 import {apiBaseUrl} from '../constants';
 import { Patient } from "../types";
+import Entry from './Entry';
 interface Paramaters{
     id?: string;
 }
@@ -43,11 +44,13 @@ const PatientPage: React.FC = () =>{
                 return "mars";
         }
     };
-    return(
+    return !patient.entries ? null : (
         <Container>
         <Header as="h2">{patient?.name} <Icon name={getGender()}/></Header>
     <p>{`ssn: : ${patient.ssn}`}</p>
     <p>{`occupation: ${patient.occupation}`}</p>
+    <h3>entries</h3>
+    {patient.entries.map(entry=><Entry key={entry.id} entry={entry}/>)}
         </Container>
 
     );
